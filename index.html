@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="Aloud turns any text into speech in your browser. Pick a voice, set the speed and listen. Free, with no account.">
+    <title>Aloud: Free Text to Speech</title>
+
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Aloud">
+    <meta name="msapplication-TileColor" content="#0a7cff">
+    <meta name="msapplication-TileImage" content="assets/icons/ms-icon-144.png">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+
+    <script>
+        try { document.documentElement.dataset.theme = localStorage.getItem("tts_theme") || "light"; }
+        catch (e) { document.documentElement.dataset.theme = "light"; }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol id="i-library" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M10 3 8 9l4 12 4-12-2-6"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></symbol>
+    <symbol id="i-mp3" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M10 17v-4l4-1v4"/><circle cx="9" cy="17" r="1"/><circle cx="13" cy="16" r="1"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></symbol>
+    <symbol id="i-rec" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></symbol>
+    <symbol id="i-blur" viewBox="0 0 24 24"><path d="M12 3s-6 6.2-6 11a6 6 0 0 0 12 0c0-4.8-6-11-6-11z"/><path d="M9 15a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
+    <symbol id="i-font" viewBox="0 0 24 24"><path d="M2.5 19 8 5l5.5 14M4.8 14h6.4"/><circle cx="18" cy="15.5" r="2.6"/><path d="M20.6 12.9V19"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path d="m6 6 6 6-6 6M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-feather" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><path d="M16 8 2 22M17.5 15H9"/></symbol>
+    <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="6"/><path d="M12 7v4"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></symbol>
+    <symbol id="i-cmd" viewBox="0 0 24 24"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-transcribe" viewBox="0 0 24 24"><path d="M3 7h9M3 12h6M3 17h9M15 9v6M18 6v12M21 10v4"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M19 20 9 12l10-8z" fill="currentColor" stroke="none"/><path d="M5 5v14"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m5 4 10 8-10 8z" fill="currentColor" stroke="none"/><path d="M19 5v14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+</svg>
+
+<div class="app">
+
+    <!-- ===== LEFT RAIL ===== -->
+    <nav class="rail" aria-label="Main">
+        <svg class="brand-mark" viewBox="0 0 32 32" role="img" aria-label="Aloud">
+            <rect width="32" height="32" rx="8"></rect>
+            <g class="bars">
+                <rect x="7" y="11" width="3" height="10" rx="1.5"></rect>
+                <rect x="12" y="7" width="3" height="18" rx="1.5"></rect>
+                <rect x="17" y="9" width="3" height="14" rx="1.5"></rect>
+                <rect x="22" y="12" width="3" height="8" rx="1.5"></rect>
+            </g>
+        </svg>
+
+        <button id="readNavBtn" class="rail-btn on" type="button" aria-pressed="true" aria-label="Read" title="Read"><svg class="icon"><use href="#i-play"/></svg><span>Read</span></button>
+        <button id="dictateNavBtn" class="rail-btn" type="button" aria-controls="dictatePage" aria-pressed="false" aria-label="Dictate" title="Dictate"><svg class="icon"><use href="#i-mic"/></svg><span>Dictate</span></button>
+        <button id="transcribeNavBtn" class="rail-btn" type="button" aria-controls="transcribePage" aria-pressed="false" aria-label="Transcribe" title="Transcribe audio to text"><svg class="icon"><use href="#i-transcribe"/></svg><span>Transcribe</span></button>
+        <button class="rail-btn" type="button" data-panel="panel-library" aria-label="Library" title="Library"><svg class="icon"><use href="#i-library"/></svg><span>Library</span></button>
+        <button class="rail-btn" type="button" data-panel="panel-audio" aria-label="Audio" title="Audio"><svg class="icon"><use href="#i-music"/></svg><span>Audio</span></button>
+        <button class="rail-btn" type="button" data-panel="panel-account" aria-label="Account" title="Account"><svg class="icon"><use href="#i-user"/></svg><span>Account</span></button>
+        <button id="themeBtn" class="rail-btn" type="button" aria-label="Switch theme" title="Mode">
+            <svg class="icon i-sun"><use href="#i-sun"/></svg>
+            <svg class="icon i-moon"><use href="#i-moon"/></svg>
+            <span>Mode</span>
+        </button>
+
+        <span class="grow"></span>
+        <button id="naturalBtn" class="rail-gem" type="button" aria-label="Natural voices" title="Show natural-sounding voices"><svg class="icon"><use href="#i-gem"/></svg></button>
+        <input id="dictateFileInput" type="file" accept=".pdf,.docx,.epub,.txt,.md,.markdown,.text,.csv,.log,text/*" hidden>
+        <input id="fileInput" type="file" accept=".pdf,.docx,.epub,.txt,.md,.markdown,.text,.csv,.log,text/*" hidden>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+        <section id="dictatePage" class="dictate-page hidden" aria-label="Dictation page" aria-hidden="true">
+            <div class="dictate-wrap">
+                <div class="dictate-card">
+                    <header class="dictate-toolbar">
+                        <button id="dictateStartBtn" class="dictate-start" type="button" aria-pressed="false" title="Dictation uses your browser’s speech recognition and may require microphone permission. Availability depends on your browser and connection." aria-label="Start dictating. Dictation uses your browser’s speech recognition and may require microphone permission. Availability depends on your browser and connection."><svg class="icon"><use href="#i-mic"/></svg><span>Start dictating</span></button>
+                        <span id="dictateStatus" class="dictate-status" role="status" aria-live="polite"><span class="dictate-status-dot"></span> Ready to dictate</span>
+                        <div class="dictate-head-tools">
+                            <span id="dictateCount" class="dictate-count">0 words</span>
+                            <select id="dictateLang" aria-label="Dictation language">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="en-IN">English (India)</option>
+                                <option value="hi-IN">Hindi</option>
+                                <option value="es-ES">Spanish</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                                <option value="it-IT">Italian</option>
+                                <option value="pt-BR">Portuguese (Brazil)</option>
+                                <option value="ja-JP">Japanese</option>
+                            </select>
+                            <button id="dictateHelpBtn" class="round" type="button" data-panel="panel-dictate-help" aria-haspopup="true" aria-label="Voice commands and tips" title="Voice commands and tips"><svg class="icon"><use href="#i-info"/></svg></button>
+                            <button id="dictateSettingsBtn" class="round" type="button" data-panel="panel-dictate-settings" aria-haspopup="true" aria-label="Dictation settings" title="Dictation settings"><svg class="icon"><use href="#i-sliders"/></svg></button>
+                        </div>
+                    </header>
+                    <textarea id="dictateText" class="dictate-text" spellcheck="true" placeholder="Get started in three steps&#10;&#10;1.  Press the blue Start dictating button at the top and allow microphone access if your browser asks.&#10;2.  Speak naturally. Your words appear here as you talk. Press Stop dictating when you are done.&#10;3.  Choose Copy, Save or Use (to read it aloud) with the buttons next to the text box.&#10;&#10;Handy tips&#10;•  Pick your language next to the button before you start.&#10;•  Say “period”, “comma”, “question mark”, “new line” or “new paragraph” to add punctuation (English only). The info button lists every voice command.&#10;•  While dictating, press Enter to move what you have said so far from the buffer into the text.&#10;•  You can type or edit in this box at any time, even while dictating.&#10;•  File opens a PDF, Word, EPUB or text file here. Clear starts over.&#10;•  The settings button in the header controls auto-capitalise, text size and where new words are inserted." aria-label="Dictated text"></textarea>
+                </div>
+                <div class="actions dictate-side">
+                    <button id="dictateNewBtn" class="tool" type="button" title="New text"><svg class="icon"><use href="#i-plus"/></svg><span>New</span></button>
+                    <button id="dictateOpenBtn" class="tool" type="button" title="Open a PDF, Word (.docx), EPUB or text file"><svg class="icon"><use href="#i-file"/></svg><span>File</span></button>
+                    <button id="dictateSaveBtn" class="tool" type="button" title="Save this text to your Library"><svg class="icon"><use href="#i-save"/></svg><span>Save</span></button>
+                    <button id="dictateUseBtn" class="tool" type="button" title="Use in Aloud"><svg class="icon"><use href="#i-check"/></svg><span>Use</span></button>
+                    <button id="dictateCopyBtn" class="tool" type="button" title="Copy text"><svg class="icon"><use href="#i-paste"/></svg><span>Copy</span></button>
+                    <button id="dictateClearBtn" class="tool danger" type="button" title="Clear text"><svg class="icon"><use href="#i-trash"/></svg><span>Clear</span></button>
+                </div>
+            </div>
+        </section>
+        <section id="transcribePage" class="dictate-page hidden" aria-label="Transcribe page" aria-hidden="true">
+            <div class="dictate-wrap">
+                <div id="transcribeCard" class="dictate-card">
+                    <header class="dictate-toolbar">
+                        <button id="transcribeStartBtn" class="dictate-start" type="button" title="Choose an audio or video file to turn into text. Everything is processed in this browser." aria-label="Choose an audio file to transcribe"><svg class="icon"><use href="#i-file"/></svg><span>Choose audio file</span></button>
+                        <span id="transcribeStatus" class="dictate-status" role="status" aria-live="polite"><span class="dictate-status-dot"></span> Ready to transcribe</span>
+                        <div class="dictate-head-tools">
+                            <span id="transcribeCount" class="dictate-count">0 words</span>
+                            <select id="transcribeLang" aria-label="Spoken language">
+                                <option value="auto">Auto-detect</option>
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="spanish">Spanish</option>
+                                <option value="french">French</option>
+                                <option value="german">German</option>
+                                <option value="italian">Italian</option>
+                                <option value="portuguese">Portuguese</option>
+                                <option value="japanese">Japanese</option>
+                            </select>
+                            <button id="transcribeSettingsBtn" class="round" type="button" data-panel="panel-transcribe-settings" aria-haspopup="true" aria-label="Transcription settings" title="Transcription settings"><svg class="icon"><use href="#i-sliders"/></svg></button>
+                        </div>
+                        <div id="transcribeProgress" class="tr-progress" hidden><span></span></div>
+                    </header>
+                    <textarea id="transcribeText" class="dictate-text" spellcheck="true" placeholder="Turn speech into text in three steps&#10;&#10;1.  Press Choose audio file (or drop a file here), or press Record to speak into your microphone.&#10;2.  Wait while the words appear. The first time, a small speech model is downloaded once and kept by your browser.&#10;3.  Edit the text if you like, then choose Copy, Export, Save or Use (to read it aloud).&#10;&#10;Handy tips&#10;•  Pick the spoken language next to the button for the best results, or leave it on Auto-detect.&#10;•  MP3, WAV, M4A, OGG, WebM, FLAC and most video files (MP4, MOV) work.&#10;•  Your audio never leaves this browser. Only the speech model is downloaded.&#10;•  The settings button controls the model (Fast or Accurate) and timestamps.&#10;•  Press Stop while it is working to keep what has been transcribed so far." aria-label="Transcribed text"></textarea>
+                </div>
+                <div class="actions dictate-side">
+                    <button id="transcribeNewBtn" class="tool" type="button" title="Start a new transcript"><svg class="icon"><use href="#i-plus"/></svg><span>New</span></button>
+                    <button id="transcribeRecordBtn" class="tool" type="button" title="Record from your microphone, then transcribe it"><svg class="icon"><use href="#i-mic"/></svg><span>Record</span></button>
+                    <button id="transcribeSaveBtn" class="tool" type="button" title="Save this text to your Library"><svg class="icon"><use href="#i-save"/></svg><span>Save</span></button>
+                    <button id="transcribeUseBtn" class="tool" type="button" title="Use in Aloud"><svg class="icon"><use href="#i-check"/></svg><span>Use</span></button>
+                    <button id="transcribeCopyBtn" class="tool" type="button" title="Copy text"><svg class="icon"><use href="#i-paste"/></svg><span>Copy</span></button>
+                    <button id="transcribeDownloadBtn" class="tool" type="button" title="Export as a .txt file"><svg class="icon"><use href="#i-download"/></svg><span>Export</span></button>
+                    <button id="transcribeClearBtn" class="tool danger" type="button" title="Clear text"><svg class="icon"><use href="#i-trash"/></svg><span>Clear</span></button>
+                </div>
+            </div>
+            <input id="transcribeFileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.m4a,.ogg,.opus,.webm,.flac,.aac,.mp4,.mov,.mkv" hidden>
+        </section>
+        <div class="stage">
+            <div class="stage-inner">
+
+                <section class="card" aria-label="Text editor">
+                    <header class="read-head">
+                        <div class="read-head-row">
+                            <div class="read-controls">
+                                <button id="prevBtn" class="round" type="button" aria-label="Previous sentence" title="Previous sentence"><svg class="icon"><use href="#i-prev"/></svg></button>
+                                <button id="toggleBtn" class="round play" type="button" data-state="idle" aria-label="Play" aria-keyshortcuts="Control+Enter Meta+Enter">
+                            <svg class="icon i-play"><use href="#i-play"/></svg>
+                            <svg class="icon i-pause"><use href="#i-pause"/></svg>
+                        </button>
+                                <button id="nextBtn" class="round" type="button" aria-label="Next sentence" title="Next sentence"><svg class="icon"><use href="#i-next"/></svg></button>
+                                <div class="time"><span id="elapsedTime">00:00</span> / <span id="totalTime">00:00</span></div>
+                                <span id="status" class="dictate-status" data-state="idle" role="status" aria-live="polite"><span class="dictate-status-dot"></span> <span id="statusText">Ready</span></span>
+                            </div>
+                            <div class="read-tools">
+                                <button id="avatarBtn" class="avatar" type="button" data-panel="panel-voice" aria-label="Choose a voice"><span id="avatarText">Vo</span></button>
+                                <button id="speedBtn" class="speed" type="button" data-panel="panel-speed" aria-haspopup="true" title="Change speed"><span id="speedBtnLabel">1x</span></button>
+                                <button id="volumeBtn" class="round" type="button" data-panel="panel-volume" aria-haspopup="true" aria-label="Volume" title="Volume"><svg class="icon" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></button>
+                                <span class="read-sep" aria-hidden="true"></span>
+                                <button id="findBtn" class="round" type="button" aria-label="Find in text" title="Find (Ctrl+F)"><svg class="icon"><use href="#i-search"/></svg></button>
+                                <button id="shareBtn" class="round" type="button" data-panel="panel-share" aria-haspopup="true" aria-label="Share text" title="Share"><svg class="icon"><use href="#i-share"/></svg></button>
+                                <button class="round" type="button" data-panel="panel-settings" aria-label="Playback settings" title="Playback settings"><svg class="icon"><use href="#i-sliders"/></svg></button>
+                            </div>
+                        </div>
+                        <input type="range" id="seekSlider" min="0" max="100" value="0" step="0.1" aria-label="Playback position">
+                    </header>
+                    <div id="findBar" class="findbar hidden">
+                        <svg class="icon"><use href="#i-search"/></svg>
+                        <input id="findInput" type="search" placeholder="Find in text" aria-label="Find in text" autocomplete="off">
+                        <span id="findCount" class="find-count"></span>
+                        <button id="findPrev" class="btn-icon sm" type="button" aria-label="Previous match"><svg class="icon"><use href="#i-up"/></svg></button>
+                        <button id="findNext" class="btn-icon sm" type="button" aria-label="Next match"><svg class="icon"><use href="#i-down"/></svg></button>
+                        <button id="findClose" class="btn-icon sm" type="button" aria-label="Close find"><svg class="icon"><use href="#i-x"/></svg></button>
+                    </div>
+
+                    <div class="textarea-wrapper" id="dropZone">
+                        <div id="sentlite" class="hilite sentlite" aria-hidden="true"></div>
+                        <div id="hilite" class="hilite" aria-hidden="true"></div>
+                        <textarea id="text" aria-label="Text to read aloud" spellcheck="true"
+                                  placeholder="Get started in three steps&#10;&#10;1.  Add your text: type or paste it here, or drop a PDF, Word (.docx), EPUB or text file anywhere on this page. You can also use the File or Paste buttons.&#10;2.  Press the blue Play button at the top (or Ctrl/Cmd + Enter) to hear it read aloud.&#10;3.  Adjust the voice, speed and volume from the controls in the header.&#10;&#10;Handy tips&#10;•  Double-click any word to start reading from it.&#10;•  Previous and Next jump one sentence back or forward.&#10;•  Drag the line under the controls to move through the text.&#10;•  Ctrl/Cmd + F searches the text. Esc stops reading.&#10;•  Save keeps this text in your Library. MP3 turns it into an audio file.&#10;•  Blur hides the text while you listen."></textarea>
+                        <button id="backBtn" class="jump hidden" type="button"><svg class="icon"><use href="#i-target"/></svg>Jump to current word</button>
+                    </div>
+
+                </section>
+
+                <div class="actions">
+                    <button id="newBtn" class="tool" type="button" title="New text"><svg class="icon"><use href="#i-plus"/></svg><span>New</span></button>
+                    <button id="openBtn" class="tool" type="button" title="Open a PDF, Word (.docx), EPUB or text file"><svg class="icon"><use href="#i-file"/></svg><span>File</span></button>
+                    <button id="saveBtn" class="tool" type="button" title="Save this text to your Library"><svg class="icon"><use href="#i-save"/></svg><span>Save</span></button>
+                    <button id="pasteBtn" class="tool" type="button" title="Paste from clipboard"><svg class="icon"><use href="#i-paste"/></svg><span>Paste</span></button>
+                    <div class="export-menu-wrap">
+                        <button id="exportMenuBtn" class="tool" type="button" aria-haspopup="menu" aria-expanded="false" title="Export or upload this text"><svg class="icon"><use href="#i-download"/></svg><span>Export</span></button>
+                        <div id="exportMenu" class="export-menu hidden" role="menu" aria-label="Export options">
+                            <button type="button" role="menuitem" data-export="drive">Upload to Google Drive</button>
+                            <button type="button" role="menuitem" data-export="file">Download as file (.txt)</button>
+                            <button type="button" role="menuitem" data-export="word">Word document (.doc)</button>
+                            <button type="button" role="menuitem" data-export="pdf">PDF document</button>
+                            <button type="button" role="menuitem" data-export="mp3">MP3 audio</button>
+                        </div>
+                    </div>
+                    <button id="mp3Btn" class="tool export-mp3-hidden" type="button" data-state="idle" title="Read the whole text and save it as an MP3"><svg class="icon"><use href="#i-mp3"/></svg><span id="mp3Label">MP3</span></button>
+                    <button id="blurBtn" class="tool" type="button" title="Blur the text" aria-pressed="false"><svg class="icon"><use href="#i-blur"/></svg><span>Blur</span></button>
+                    <button id="clearBtn" class="tool danger" type="button" title="Clear the text"><svg class="icon"><use href="#i-trash"/></svg><span>Clear</span></button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== PANELS ===== -->
+    <section id="panel-voice" class="panel pop below mid hidden" aria-label="Voice">
+        <div class="panel-head"><h2>Voice</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <div class="field">
+            <div class="field-head"><label class="field-title" for="lang">Language and voice</label></div>
+            <select id="lang" aria-label="Language"></select>
+            <select id="voices" aria-label="Voice"></select>
+        </div>
+        <div class="field">
+            <div class="option">
+                <div class="option-text"><span id="autoLangLabel">Detect language automatically</span><small>Selects the language of your text from the list</small></div>
+                <button id="autoLangSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="autoLangLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="naturalLabel">Natural voices only</span><small>Shows the higher quality voices your device offers</small></div>
+                <button id="naturalSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="naturalLabel"></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="panel-speed" class="panel pop below anchor bare hidden" aria-label="Speed">
+        <div class="speedbox">
+            <div class="scale wpm" aria-hidden="true">
+                <span style="--p:0">50</span><span style="--p:0.158">180</span><span style="--p:0.368">360</span>
+                <span style="--p:0.579">540</span><span style="--p:0.789">720</span><span style="--p:1">900<small>WPM</small></span>
+            </div>
+            <button id="slower" class="sbtn" type="button" aria-label="Slower">&minus;</button>
+            <input type="range" id="rate" min="0.25" max="5" step="0.05" value="1" aria-label="Speed">
+            <button id="faster" class="sbtn" type="button" aria-label="Faster">+</button>
+            <div class="scale xs" role="group" aria-label="Speed presets">
+                <button class="tick" type="button" style="--p:0" data-rate="0.25">0.25x</button>
+                <button class="tick" type="button" style="--p:0.158" data-rate="1">1x</button>
+                <button class="tick" type="button" style="--p:0.368" data-rate="2">2x</button>
+                <button class="tick" type="button" style="--p:0.579" data-rate="3">3x</button>
+                <button class="tick" type="button" style="--p:0.789" data-rate="4">4x</button>
+                <button class="tick" type="button" style="--p:1" data-rate="5">5x</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="panel-volume" class="panel pop below anchor volume-pop hidden" aria-label="Volume">
+        <div class="panel-head"><h2>Volume</h2><span class="field-value" id="volumeValue">100%</span></div>
+        <div class="volume-row">
+            <span class="vol-icon" id="volumeIcon" data-level="high" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path class="w1" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="w2" d="M19 5a10 10 0 0 1 0 14"/><path class="x" d="m16 9 6 6m0-6-6 6"/></svg>
+            </span>
+            <input type="range" id="volume" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+        </div>
+        <div class="volume-presets" role="group" aria-label="Quick volume levels">
+            <button type="button" data-volume="0.25" aria-pressed="false">25%</button>
+            <button type="button" data-volume="0.5" aria-pressed="false">50%</button>
+            <button type="button" data-volume="0.75" aria-pressed="false">75%</button>
+            <button type="button" data-volume="1" aria-pressed="true">100%</button>
+        </div>
+        <div class="volume-actions">
+            <button type="button" id="volumeMuteBtn" class="volume-action" aria-pressed="false">Mute</button>
+            <button type="button" id="volumeResetBtn" class="volume-action">Reset to 100%</button>
+        </div>
+        <p class="volume-note">Changes apply to speech playback and are saved automatically.</p>
+    </section>
+
+    <section id="panel-share" class="panel pop below anchor bare hidden" aria-label="Share">
+        <div class="sharebox">
+            <h2>Share</h2>
+            <p class="share-sub">Anyone with this link can listen.</p>
+            <input id="shareLink" class="linkfield" type="text" readonly aria-label="Share link" placeholder="Add some text to get a link">
+            <button id="copyLink" class="btn-primary" type="button">Copy link</button>
+            <p id="shareNote" class="field-note"></p>
+        </div>
+    </section>
+
+    <section id="panel-settings" class="panel pop below settings hidden" aria-label="Settings">
+
+        <div class="sview" data-view="root">
+            <div class="shead"><span class="sback"></span><h2>Settings</h2><span class="sback"></span></div>
+            <button class="srow" type="button" data-go="font"><span class="sico" style="--c:#0a84ff"><svg class="icon"><use href="#i-font"/></svg></span><span class="slabel">Font</span><span class="sval" id="val-font"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <button class="srow" type="button" data-go="skip"><span class="sico" style="--c:#ff9f0a"><svg class="icon"><use href="#i-skip"/></svg></span><span class="slabel">Skip</span><span class="sval" id="val-skip"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <button class="srow" type="button" data-go="highlight"><span class="sico" style="--c:#af52de"><svg class="icon"><use href="#i-feather"/></svg></span><span class="slabel">Highlight Text</span><span class="sval" id="val-highlight"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <div class="srow static"><span class="sico" style="--c:#30d158"><svg class="icon"><use href="#i-mouse"/></svg></span><span class="slabel" id="scrollLabel">Auto Scroll</span><button id="scrollSwitch" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="scrollLabel"></button></div>
+            <button class="srow" type="button" data-go="timer"><span class="sico" style="--c:#ff3b30"><svg class="icon"><use href="#i-timer"/></svg></span><span class="slabel">Timer</span><span class="sval" id="val-timer"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <button class="srow" type="button" data-go="hotkeys"><span class="sico" style="--c:#5e5ce6"><svg class="icon"><use href="#i-cmd"/></svg></span><span class="slabel">Hotkeys</span><span class="sval" id="val-hotkeys"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <button class="srow" type="button" data-go="tune"><span class="sico" style="--c:#14b8a6"><svg class="icon"><use href="#i-sliders"/></svg></span><span class="slabel">Pitch</span><span class="sval" id="val-tune"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <button class="srow" type="button" data-go="help"><span class="sico" style="--c:#8e8e93"><svg class="icon"><use href="#i-info"/></svg></span><span class="slabel">Help</span><span class="sval">Shortcuts &amp; tips</span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+        </div>
+
+        <div class="sview hidden" data-view="font">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Font</h2><span class="sback"></span></div>
+            <div class="field">
+                <div class="field-head"><h3 class="field-title">Typeface</h3></div>
+                <div class="segmented" role="group" aria-label="Typeface" style="margin-top:0">
+                    <button type="button" data-font="sans" style="font-family:var(--font-ui)">Sans</button>
+                    <button type="button" data-font="serif" style="font-family:Georgia,serif">Serif</button>
+                    <button type="button" data-font="mono" style="font-family:ui-monospace,Menlo,Consolas,monospace">Mono</button>
+                    <button type="button" data-font="dyslexia" style="font-family:'OpenDyslexic','Lexend','Atkinson Hyperlegible','Comic Sans MS',Verdana,sans-serif">Dyslexia</button>
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-head"><label class="field-title" for="fontSize">Text size</label><span class="field-value" id="fontSizeValue">18 px</span></div>
+                <input type="range" id="fontSize" min="14" max="36" step="1" value="18">
+            </div>
+            <div class="field">
+                <div class="field-head"><h3 class="field-title">Text spacing</h3></div>
+                <div class="segmented" role="group" aria-label="Text spacing" style="margin-top:0">
+                    <button type="button" data-spacing="default">Default</button>
+                    <button type="button" data-spacing="relaxed">Relaxed</button>
+                    <button type="button" data-spacing="wide">Wide</button>
+                </div>
+                <p class="field-note" style="margin:8px 0 0">Adjusts letter, word and line spacing.</p>
+            </div>
+        </div>
+
+        <div class="sview hidden" data-view="skip">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Skip</h2><span class="sback"></span></div>
+            <p class="field-note">Parts of the text that are left out when reading aloud. Your text is not changed.</p>
+            <div class="option">
+                <div class="option-text"><span id="skipUrlSwitchLabel">Web links</span><small>https://… and www. addresses</small></div>
+                <button id="skipUrlSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="skipUrlSwitchLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="skipRefSwitchLabel">Citations</span><small>Numbers in brackets, like [12]</small></div>
+                <button id="skipRefSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="skipRefSwitchLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="skipParenSwitchLabel">Brackets</span><small>Anything inside (parentheses)</small></div>
+                <button id="skipParenSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="skipParenSwitchLabel"></button>
+            </div>
+        </div>
+
+        <div class="sview hidden" data-view="highlight">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Highlight Text</h2><span class="sback"></span></div>
+            <button class="srow boxed" type="button" data-go="hlmode"><span class="slabel">Mode</span><span class="sval" id="val-hlmode"></span><svg class="icon chev"><use href="#i-chev"/></svg></button>
+            <div class="field">
+                <div class="field-head"><h3 class="field-title">Colour</h3></div>
+                <div class="swatches" role="group" aria-label="Highlight colour">
+                    <button type="button" data-hl="red" style="--s:#ff3b30" aria-label="Red"></button>
+                    <button type="button" data-hl="orange" style="--s:#ff9500" aria-label="Orange"></button>
+                    <button type="button" data-hl="yellow" style="--s:#ffe066" aria-label="Yellow"></button>
+                    <button type="button" data-hl="green" style="--s:#34c759" aria-label="Green"></button>
+                    <button type="button" data-hl="blue" style="--s:#0a84ff" aria-label="Blue"></button>
+                    <button type="button" data-hl="indigo" style="--s:#5e5ce6" aria-label="Indigo"></button>
+                    <button type="button" data-hl="purple" style="--s:#af52de" aria-label="Purple"></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sview hidden" data-view="hlmode">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="highlight" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Highlight Text</h2><span class="sback"></span></div>
+            <div role="radiogroup" aria-label="Highlight mode">
+                <button class="srow" type="button" role="radio" data-mode="both" aria-checked="false"><span class="slabel">Sentence &amp; Word</span><svg class="icon tick"><use href="#i-check"/></svg></button>
+                <button class="srow" type="button" role="radio" data-mode="sentence" aria-checked="false"><span class="slabel">Sentence Only</span><svg class="icon tick"><use href="#i-check"/></svg></button>
+                <button class="srow" type="button" role="radio" data-mode="word" aria-checked="false"><span class="slabel">Word Only</span><svg class="icon tick"><use href="#i-check"/></svg></button>
+                <button class="srow" type="button" role="radio" data-mode="none" aria-checked="false"><span class="slabel">None</span><svg class="icon tick"><use href="#i-check"/></svg></button>
+            </div>
+        </div>
+
+        <div class="sview hidden" data-view="timer">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Timer</h2><span class="sback"></span></div>
+            <p class="field-note">Stops reading after a set time, handy for listening before sleep.</p>
+            <div class="timer-read" id="sleepLeft" aria-live="off">Off</div>
+            <div class="segmented wrap" role="group" aria-label="Sleep timer">
+                <button type="button" data-sleep="0">Off</button><button type="button" data-sleep="5">5 min</button>
+                <button type="button" data-sleep="10">10 min</button><button type="button" data-sleep="15">15 min</button>
+                <button type="button" data-sleep="30">30 min</button><button type="button" data-sleep="45">45 min</button>
+                <button type="button" data-sleep="60">1 hour</button><button type="button" data-sleep="120">2 hours</button>
+            </div>
+        </div>
+
+        <div class="sview hidden" data-view="hotkeys">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Hotkeys</h2><span class="sback"></span></div>
+            <div class="option">
+                <div class="option-text"><span id="hotkeysSwitchLabel">Extra hotkeys</span><small>Alt shortcuts for sentences and speed</small></div>
+                <button id="hotkeysSwitch" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="hotkeysSwitchLabel"></button>
+            </div>
+            <dl class="keys">
+                <dt>Ctrl or Cmd + Enter</dt><dd>Play or pause</dd>
+                <dt>Alt + Space</dt><dd>Play or pause</dd>
+                <dt>Alt + Left / Right</dt><dd>Previous or next sentence</dd>
+                <dt>Alt + Up / Down</dt><dd>Faster or slower</dd>
+                <dt>Ctrl or Cmd + F</dt><dd>Find in the text</dd>
+                <dt>Esc</dt><dd>Stop reading, or close a panel</dd>
+            </dl>
+        </div>
+
+        <div class="sview hidden" data-view="tune">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Pitch</h2><span class="sback"></span></div>
+            <p class="pitch-intro">Shape the voice to suit your ears. Lower pitch sounds deeper; higher pitch sounds brighter. Speed stays unchanged.</p>
+            <div class="pitch-card">
+                <div class="pitch-current">
+                    <div class="pitch-orb" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></div>
+                    <div class="pitch-current-copy"><span class="pitch-current-label">Current pitch</span><strong id="pitchName">Natural</strong></div>
+                    <span class="pitch-number" id="pitchValue">1.0</span>
+                </div>
+                <label class="field-title pitch-slider-label" for="pitch">Adjust pitch</label>
+                <input type="range" id="pitch" min="0" max="2" step="0.1" value="1" aria-describedby="pitchHelp">
+                <div class="pitch-scale" aria-hidden="true"><span>Deeper</span><span>Natural</span><span>Brighter</span></div>
+                <p class="pitch-help" id="pitchHelp">Fine-tune from 0.0 (deepest) to 2.0 (highest). Choose Natural to reset.</p>
+            </div>
+            <div class="pitch-presets-wrap">
+                <div class="pitch-presets-heading"><span>Quick presets</span><span>Tap to apply</span></div>
+                <div class="pitch-presets" role="group" aria-label="Pitch presets">
+                    <button type="button" data-pitch="0.5" aria-pressed="false"><span class="pitch-preset-icon">↓</span><span class="pitch-preset-label">Deep</span><strong>0.5</strong></button>
+                    <button type="button" data-pitch="1" aria-pressed="true"><span class="pitch-preset-icon">●</span><span class="pitch-preset-label">Natural</span><strong>1.0</strong></button>
+                    <button type="button" data-pitch="1.5" aria-pressed="false"><span class="pitch-preset-icon">↑</span><span class="pitch-preset-label">Bright</span><strong>1.5</strong></button>
+                    <button type="button" data-pitch="2" aria-pressed="false"><span class="pitch-preset-icon">⇈</span><span class="pitch-preset-label">High</span><strong>2.0</strong></button>
+                </div>
+            </div>
+            <p class="pitch-footnote">Pitch availability and sound can vary by voice and browser.</p>
+        </div>
+
+        <div class="sview hidden" data-view="help">
+            <div class="shead"><button class="btn-icon sm sback" type="button" data-go="root" aria-label="Back"><svg class="icon"><use href="#i-back"/></svg></button><h2>Help</h2><span class="sback"></span></div>
+
+            <p class="help-label">Keyboard shortcuts</p>
+            <div class="help-card">
+                <div class="help-row"><span class="help-keys"><kbd>Ctrl</kbd><kbd>Enter</kbd></span><span class="help-what">Play or pause</span></div>
+                <div class="help-row"><span class="help-keys"><kbd>Esc</kbd></span><span class="help-what">Stop reading or close a panel</span></div>
+                <div class="help-row"><span class="help-keys"><kbd>Ctrl</kbd><kbd>F</kbd></span><span class="help-what">Find in the text</span></div>
+                <div class="help-row"><span class="help-keys"><kbd>Alt</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd></span><span class="help-what">Previous or next sentence</span></div>
+                <div class="help-row"><span class="help-keys"><kbd>Alt</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd></span><span class="help-what">Faster or slower</span></div>
+            </div>
+            <p class="help-hint">On Mac use Cmd instead of Ctrl. The Alt shortcuts need Extra hotkeys switched on in Hotkeys.</p>
+
+            <p class="help-label">Getting around</p>
+            <div class="help-card">
+                <div class="help-row tip"><span class="sico" style="--c:#0a84ff"><svg class="icon"><use href="#i-mouse"/></svg></span><span class="help-what"><strong>Double-click a word</strong><small>Start reading from there</small></span></div>
+                <div class="help-row tip"><span class="sico" style="--c:#ff9f0a"><svg class="icon"><use href="#i-skip"/></svg></span><span class="help-what"><strong>Previous and next</strong><small>Jump one sentence back or forward</small></span></div>
+                <div class="help-row tip"><span class="sico" style="--c:#30d158"><svg class="icon"><use href="#i-file"/></svg></span><span class="help-what"><strong>Drop a file on the page</strong><small>PDF, Word (.docx), EPUB or text</small></span></div>
+            </div>
+
+            <p class="help-label">MP3 audio</p>
+            <div class="help-card help-copy">
+                <p><strong>MP3</strong> reads the whole text from the beginning and saves it as an MP3 file.</p>
+                <p>MP3 export works in Chrome and Edge on a computer. When asked, choose <strong>This tab</strong> and turn on <strong>Share tab audio</strong>.</p>
+                <p>If the file is silent, try again, choose <strong>Entire screen</strong> and turn on <strong>Share system audio</strong>.</p>
+            </div>
+        </div>
+
+    </section>
+<section id="panel-dictate-help" class="panel pop below anchor hidden" aria-label="Voice commands and tips">
+        <div class="panel-head"><h2>Voice commands</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <div class="field">
+            <p class="field-note" style="margin-top:0"><strong>Tip:</strong> While dictating, press <kbd>Enter ↵</kbd> on your keyboard to quickly move the results from the buffer into the text editor.</p>
+        </div>
+        <div class="field">
+            <table class="vc-table">
+                <thead><tr><th>Say</th><th>Insert</th></tr></thead>
+                <tbody>
+                    <tr><td>Period</td><td>.</td></tr>
+                    <tr><td>Comma</td><td>,</td></tr>
+                    <tr><td>Question mark</td><td>?</td></tr>
+                    <tr><td>Colon</td><td>:</td></tr>
+                    <tr><td>Semi colon</td><td>;</td></tr>
+                    <tr><td>Exclamation mark, Exclamation point</td><td>!</td></tr>
+                    <tr><td>Dash, Hyphen</td><td>-</td></tr>
+                    <tr><td>New line</td><td>↵</td></tr>
+                    <tr><td>New paragraph</td><td>↵↵</td></tr>
+                    <tr><td>Open parentheses</td><td>(</td></tr>
+                    <tr><td>Close parentheses</td><td>)</td></tr>
+                    <tr><td>Smiley, Smiley face</td><td>:-)</td></tr>
+                    <tr><td>Sad face</td><td>:-(</td></tr>
+                </tbody>
+            </table>
+            <p class="field-note">Voice commands work in English and can be switched off with Voice punctuation in the settings.</p>
+        </div>
+    </section>
+
+<section id="panel-dictate-settings" class="panel pop below anchor hidden" aria-label="Dictation settings">
+        <div class="panel-head"><h2>Dictation settings</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">While dictating</h3></div>
+            <div class="option">
+                <div class="option-text"><span id="dsKeepLabel">Keep listening</span><small>Restarts the microphone after pauses until you press Stop</small></div>
+                <button id="dsKeep" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="dsKeepLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="dsInterimLabel">Show words as I speak</span><small>Displays live text before it is finalised</small></div>
+                <button id="dsInterim" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="dsInterimLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="dsCursorLabel">Insert at cursor</span><small>Adds speech where your cursor is, not at the end</small></div>
+                <button id="dsCursor" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="dsCursorLabel"></button>
+            </div>
+        </div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">Saving</h3></div>
+            <div class="option">
+                <div class="option-text"><span id="dsAutosaveLabel">Autosave</span><small>Automatically saves your dictated text to the Library as you speak or type</small></div>
+                <button id="dsAutosave" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="dsAutosaveLabel"></button>
+            </div>
+        </div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">Text clean-up</h3></div>
+            <div class="option">
+                <div class="option-text"><span id="dsCommandsLabel">Voice punctuation</span><small>English only. Say “period”, “comma”, “new line”, “open parentheses”, “smiley” and more. Press the info button for the full list</small></div>
+                <button id="dsCommands" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="dsCommandsLabel"></button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="dsCapitalizeLabel">Auto-capitalise</span><small>Capitalises sentences and the word “I” in English</small></div>
+                <button id="dsCapitalize" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="dsCapitalizeLabel"></button>
+            </div>
+        </div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">Text box</h3><span id="dsSizeValue" class="field-value">17 px</span></div>
+            <div class="segmented" role="group" aria-label="Text size" style="margin-top:0">
+                <button type="button" data-dsize="s" aria-pressed="false">S</button>
+                <button type="button" data-dsize="m" aria-pressed="true">M</button>
+                <button type="button" data-dsize="l" aria-pressed="false">L</button>
+                <button type="button" data-dsize="xl" aria-pressed="false">XL</button>
+            </div>
+            <div class="option">
+                <div class="option-text"><span id="dsSpellLabel">Spell check</span><small>Underlines misspelled words in the text box</small></div>
+                <button id="dsSpell" class="switch" type="button" role="switch" aria-checked="true" aria-labelledby="dsSpellLabel"></button>
+            </div>
+        </div>
+        <div class="field">
+            <button id="dsReset" class="btn-secondary block" type="button" style="margin-top:0">Reset dictation settings</button>
+        </div>
+    </section>
+
+
+<section id="panel-transcribe-settings" class="panel pop below anchor hidden" aria-label="Transcription settings">
+        <div class="panel-head"><h2>Transcription settings</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">Speech model</h3><span id="tsModelValue" class="field-value">≈40 MB</span></div>
+            <div class="segmented" role="group" aria-label="Speech model" style="margin-top:0">
+                <button type="button" data-tmodel="tiny" aria-pressed="true">Fast</button>
+                <button type="button" data-tmodel="base" aria-pressed="false">Accurate</button>
+            </div>
+            <p class="field-note">Downloaded once, then kept by your browser. Choose Accurate for non-English speech or noisy recordings.</p>
+        </div>
+        <div class="field">
+            <div class="field-head"><h3 class="field-title">Output</h3></div>
+            <div class="option">
+                <div class="option-text"><span id="tsStampsLabel">Timestamps</span><small>Starts each line with the time it was spoken. Applies to the next transcription</small></div>
+                <button id="tsStamps" class="switch" type="button" role="switch" aria-checked="false" aria-labelledby="tsStampsLabel"></button>
+            </div>
+        </div>
+        <div class="field">
+            <button id="tsReset" class="btn-secondary block" type="button" style="margin-top:0">Reset transcription settings</button>
+        </div>
+    </section>
+
+    <section id="panel-library" class="panel drawer hidden" aria-label="Library">
+        <div class="panel-head"><h2>Library</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <button id="libSave" class="btn-secondary block" type="button"><svg class="icon"><use href="#i-save"/></svg>Save current text</button>
+        <ul id="libList" class="list"></ul>
+    </section>
+
+    <section id="panel-audio" class="panel drawer hidden" aria-label="Audio">
+        <div class="panel-head"><h2>Audio</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <p class="field-note">MP3 files and recordings are kept here, on this device only.</p>
+        <ul id="audList" class="list"></ul>
+    </section>
+
+    <section id="panel-account" class="panel drawer hidden" aria-label="Account">
+        <div class="panel-head"><h2>Account</h2><button class="btn-icon sm" type="button" data-close aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+        <p class="field-note">There is no sign-in. Your texts, recordings and settings stay in this browser and never leave it.</p>
+        <ul id="acctStats" class="stats-list"></ul>
+        <button id="resetBtn" class="btn-secondary block" type="button">Reset settings</button>
+        <button id="wipeBtn" class="btn-secondary block danger" type="button"><svg class="icon"><use href="#i-trash"/></svg>Delete all my data</button>
+    </section>
+
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
